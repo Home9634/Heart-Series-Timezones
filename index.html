@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Zone Tracker</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <h1>Time Zone Tracker</h1>
     <div id="userInput">
@@ -13,10 +15,14 @@
         <button onclick="updateTimesFromUserInput()">Calculate Times</button>
         <button id="reset-times" onclick="resetTimes()">Reset Times</button>
         <button id="reset-order" onclick="resetOrder()">Reset Order</button>
+        <button onclick="sortAlphabetically()">Sort Alphabetically</button>
+        <button onclick="sortByTimezone()">Sort by Timezone</button>
     </div>
     <ul id="timezoneList"></ul>
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

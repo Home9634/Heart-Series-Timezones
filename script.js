@@ -3,7 +3,7 @@ const originalTimezoneData = [
     { name: "Killer", timezone: "BST", offset: 1 },
     { name: "Home", timezone: "SGT", offset: 8 },
     { name: "Pixi", timezone: "CET", offset: 2 },
-    { name: "Invalid", timezone: "SGT", offset: 8 },
+    { name: "Invalid", timezone: "EDT", offset: -4 },
     { name: "Parrot", timezone: "CET", offset: 2 },
     { name: "Book", timezone: "BST", offset: 1 },
     { name: "Helios", timezone: "CST", offset: -4 },
@@ -16,7 +16,7 @@ const originalTimezoneData = [
     { name: "Cave", timezone: "EDT", offset: -4 },
     { name: "Brother", timezone: "EST", offset: -5 },
     { name: "Hax", timezone: "EST", offset: -4 },
-    { name: "H", timezone: "CST", offset: -5 },
+    { name: "Hbug", timezone: "CST", offset: -5 },
     { name: "Whib", timezone: "PST", offset: -7 },
 
 ];
@@ -32,58 +32,54 @@ let frozenTime = null;
 function initializeData() {
     const storedData = JSON.parse(localStorage.getItem('timezoneData'));
     
-    if (storedData && areDataSetsEquivalent(originalTimezoneData, storedData)) {
-        timezoneData = storedData;
+    if (storedData) {
+        timezoneData = storedData.map(item => {
+            const originalItem = originalTimezoneData.find(original => original.name === item.name);
+            return originalItem || item;
+        });
+
+        originalTimezoneData.forEach(item => {
+            if (!timezoneData.some(stored => stored.name === item.name)) {
+                timezoneData.push(item);
+            }
+        });
     } else {
         timezoneData = [...originalTimezoneData];
-        localStorage.setItem('timezoneData', JSON.stringify(timezoneData));
     }
+
+    localStorage.setItem('timezoneData', JSON.stringify(timezoneData));
 }
 
-function areDataSetsEquivalent(set1, set2) {
-    if (set1.length !== set2.length) return false;
-    
-    const sortedSet1 = set1.slice().sort((a, b) => a.name.localeCompare(b.name));
-    const sortedSet2 = set2.slice().sort((a, b) => a.name.localeCompare(b.name));
-    
-    return sortedSet1.every((item, index) => 
-        item.name === sortedSet2[index].name &&
-        item.timezone === sortedSet2[index].timezone &&
-        item.offset === sortedSet2[index].offset
-    );
-}
-
-function updateTimes(baseTime = new Date()) {
+function updateTimes(baseTime = moment()) {
     timezoneList.innerHTML = '';
-    const now = new Date();
+    const now = moment();
     timezoneData.forEach(item => {
         const li = document.createElement('li');
-        const utc = baseTime.getTime() + (baseTime.getTimezoneOffset() * 60000);
-        const localTime = new Date(utc + (3600000 * item.offset));
+        const localTime = moment(baseTime).utcOffset(item.offset * 60);
         
-        const timeString = localTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const timeString = localTime.format('hh:mm:ss A');
         const dayIndicator = getDayIndicator(now, localTime);
         
         li.innerHTML = `
             <span class="name">${item.name}</span>
             <span class="time">${timeString} <span class="day-indicator">${dayIndicator}</span></span>
-            <span class="timezone">${item.timezone} - GMT${item.offset >= 0 ? '+' : ''}${item.offset}</span>
+            <span class="timezone">${item.timezone} GMT${item.offset >= 0 ? '+' : ''}${item.offset}</span>
         `;
         timezoneList.appendChild(li);
     });
 }
 
 function getDayIndicator(baseTime, localTime) {
-    const dayDiff = localTime.getDate() - baseTime.getDate();
-    if (dayDiff === 1 || (dayDiff === -30 && baseTime.getDate() === 31)) return '(tomorrow)';
-    if (dayDiff === -1 || (dayDiff === 30 && baseTime.getDate() === 1)) return '(yesterday)';
+    const dayDiff = localTime.date() - baseTime.date();
+    if (dayDiff === 1 || (dayDiff === -30 && baseTime.date() === 31)) return '(tomorrow)';
+    if (dayDiff === -1 || (dayDiff === 30 && baseTime.date() === 1)) return '(yesterday)';
     return '';
 }
 
 function updateTimesFromUserInput() {
     const userTimeInput = document.getElementById('userTime');
-    const userTime = new Date(userTimeInput.value);
-    if (isNaN(userTime.getTime())) {
+    const userTime = moment(userTimeInput.value);
+    if (!userTime.isValid()) {
         alert('Please enter a valid date and time.');
         return;
     }
@@ -99,8 +95,27 @@ function resetTimes() {
 
 function resetOrder() {
     timezoneData = [...originalTimezoneData];
+    saveAndUpdate();
+}
+
+function sortAlphabetically() {
+    timezoneData.sort((a, b) => a.name.localeCompare(b.name));
+    saveAndUpdate();
+}
+
+function sortByTimezone() {
+    timezoneData.sort((a, b) => {
+        if (a.offset !== b.offset) {
+            return a.offset - b.offset;
+        }
+        return a.timezone.localeCompare(b.timezone);
+    });
+    saveAndUpdate();
+}
+
+function saveAndUpdate() {
     localStorage.setItem('timezoneData', JSON.stringify(timezoneData));
-    updateTimes();
+    updateTimes(frozenTime || moment());
 }
 
 function startUpdates() {
@@ -131,7 +146,6 @@ new Sortable(timezoneList, {
         isDragging = false;
         const item = timezoneData.splice(evt.oldIndex, 1)[0];
         timezoneData.splice(evt.newIndex, 0, item);
-        localStorage.setItem('timezoneData', JSON.stringify(timezoneData));
-        updateTimes(frozenTime || new Date());
+        saveAndUpdate();
     }
 });
