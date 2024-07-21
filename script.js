@@ -15,8 +15,8 @@ const originalTimezoneData = [
     { name: "Moss", timezone: "CET", offset: 2 },
     { name: "Cave", timezone: "EDT", offset: -4 },
     { name: "Brother", timezone: "EST", offset: -5 },
-    { name: "Hax", timezone: "EST", offset: -5 },
-    { name: "H", timezone: "CST", offset: -6 },
+    { name: "Hax", timezone: "EST", offset: -4 },
+    { name: "H", timezone: "CST", offset: -5 },
     { name: "Whib", timezone: "PST", offset: -7 },
 
 ];
