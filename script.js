@@ -8,7 +8,7 @@ const originalTimezoneData = [
     { name: "Book", timezone: "BST", offset: 1 },
     { name: "Helios", timezone: "CST", offset: -4 },
     { name: "Milo", timezone: "EST", offset: -5 },
-    { name: "Malovent", timezone: "AEST", offset: 10 },
+    { name: "Malevolent", timezone: "AEST", offset: 10 },
     { name: "Ailbhe", timezone: "EDT", offset: -4 },
     { name: "Tom", timezone: "BST", offset: 1 },
     { name: "Satonix", timezone: "CET", offset: 2 },
