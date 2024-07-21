@@ -74,3 +74,15 @@ li {
     font-size: 0.8em;
     color: #999;
 }
+
+#searchContainer {
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}

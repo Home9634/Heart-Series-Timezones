@@ -22,8 +22,10 @@ const originalTimezoneData = [
 ];
 
 let timezoneData = [];
+let filteredTimezoneData = [];
 
 const timezoneList = document.getElementById('timezoneList');
+const searchInput = document.getElementById('searchInput');
 
 let updateInterval;
 let isDragging = false;
@@ -47,13 +49,14 @@ function initializeData() {
         timezoneData = [...originalTimezoneData];
     }
 
+    filteredTimezoneData = [...timezoneData];
     localStorage.setItem('timezoneData', JSON.stringify(timezoneData));
 }
 
 function updateTimes(baseTime = moment()) {
     timezoneList.innerHTML = '';
     const now = moment();
-    timezoneData.forEach(item => {
+    filteredTimezoneData.forEach(item => {
         const li = document.createElement('li');
         const localTime = moment(baseTime).utcOffset(item.offset * 60);
         
@@ -67,6 +70,14 @@ function updateTimes(baseTime = moment()) {
         `;
         timezoneList.appendChild(li);
     });
+}
+
+function searchPeople() {
+    const searchTerm = searchInput.value.toLowerCase();
+    filteredTimezoneData = timezoneData.filter(item => 
+        item.name.toLowerCase().includes(searchTerm)
+    );
+    updateTimes(frozenTime || moment());
 }
 
 function getDayIndicator(baseTime, localTime) {
@@ -131,9 +142,19 @@ function stopUpdates() {
     clearInterval(updateInterval);
 }
 
+function saveAndUpdate() {
+    localStorage.setItem('timezoneData', JSON.stringify(timezoneData));
+    filteredTimezoneData = [...timezoneData];
+    searchPeople(); // This will apply any current search term
+    updateTimes(frozenTime || moment());
+}
+
 // Initialize data and start updates
 initializeData();
 startUpdates();
+
+// Add event listener for search input
+searchInput.addEventListener('input', searchPeople);
 
 // Make the list sortable
 new Sortable(timezoneList, {
