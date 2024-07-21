@@ -40,12 +40,12 @@ function initializeData() {
             return originalItem || item;
         });
 
-        timezoneData = timezoneData.filter((timezone) => timezone.name != '')
+        timezoneData = timezoneData.filter((timezone) => timezone.name != '' && originalTimezoneData.some(ogtimezone => ogtimezone.name == timezone.name))
 
         originalTimezoneData.forEach(item => {
             if (!timezoneData.some(stored => stored.name === item.name)) {
                 timezoneData.push(item);
-            } 
+            }
         })
     } else {
         timezoneData = [...originalTimezoneData];
