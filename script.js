@@ -6,7 +6,7 @@ const originalTimezoneData = [
     { name: "Invalid", timezone: "SGT", offset: 8 },
     { name: "Parrot", timezone: "CET", offset: 2 },
     { name: "Book", timezone: "BST", offset: 1 },
-    { name: "Helios", timezone: "CST", offset: -4 },
+    { name: "Helios", timezone: "CST", offset: -3 },
     { name: "Milo", timezone: "EDT", offset: -4 },
     { name: "Malevolent", timezone: "AEST", offset: 10 },
     { name: "Ailbhe", timezone: "EDT", offset: -4 },
